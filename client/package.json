@@ -82,8 +82,8 @@
     "tailwindcss": "^3.0.7"
   },
   "scripts": {
-    "start": "cross-env TAILWIND_MODE=watch NODE_ENV=production postcss src/assets/styles/app.css -o src/index.css && react-scripts start",
-    "build": "cross-env TAILWIND_MODE=build NODE_ENV=production postcss src/assets/styles/app.css -o src/index.css && react-scripts build",
+    "start": "cross-env TAILWIND_MODE=watch postcss src/assets/styles/app.css -o src/index.css && react-scripts start",
+    "build": "cross-env TAILWIND_MODE=build postcss src/assets/styles/app.css -o src/index.css && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "build:css": "cross-env TAILWIND_MODE=build NODE_ENV=production postcss src/assets/styles/app.css -o src/index.css",
