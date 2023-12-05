@@ -1,46 +1,46 @@
 name: Simple CI CD pipeline (git commit -> build and test on windows, linux -> push image to dockerhub, deploy to Heroku)
 
 on:
-  push: 
-    branches: ["main"]
+  push:
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
 
 env:
-    DOCKERHUB_USERNAME: "keanlk19"
-    DOCKERHUB_PASSWORD: "Keanlk192002"
+  DOCKERHUB_USERNAME: "keanlk19"
+  DOCKERHUB_PASSWORD: "Keanlk192002"
 #   DOCKERHUB_USERNAME: ${{ secrets.DOCKER_USERNAME }}
 #   DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
 
 jobs:
-#   build_backend:
-#     name: build and test backend
-#     strategy:
-#       matrix:
-#         node-version: ['18.x']
-#         os: [ubuntu-latest, windows-latest]
-#     runs-on: ${{ matrix.os }}
-#     steps:
-#       - uses: actions/checkout@v4
-      
-#       - uses: pnpm/action-setup@v2
-#         with:
-#           version: 8
-      
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: ${{ matrix.node-version }}
+  build_backend:
+    name: build and test backend
+    strategy:
+      matrix:
+        node-version: [ '18.x' ]
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
 
-#       - run: |
-#             cd server 
-#             npm install
-#             npm run --if-present build
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: |
+          cd server 
+          npm install
+          npm run --if-present build
 
   deploy_backend:
-    name: Push backend to dockerhub and Deploy container 
+    name: Push backend to dockerhub and Deploy container
     runs-on: ubuntu-latest
-    # needs: [build_backend]
+    needs: [build_backend]
     steps:
       - uses: actions/checkout@v4
 
@@ -54,7 +54,7 @@ jobs:
         run: |
           cd server
           docker build -t nuitinfo_backend .
-        
+
       - name: Push docker image to Dockerhub
         run: |
           docker tag nuitinfo_backend ${{ env.DOCKERHUB_USERNAME }}/nuitinfo_backend
@@ -68,39 +68,36 @@ jobs:
           heroku_email: "ke_an.nguyen@insa-cvl.fr"
           appdir: "server"
 
+  build_frontend:
+    name: build and test frontend
+    strategy:
+      matrix:
+        node-version: [ '18.x' ]
+        os: [ ubuntu-latest, windows-latest ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
 
-#   build_frontend:
-#     name: build and test frontend
-#     strategy:
-#       matrix:
-#         node-version: ['18.x']
-#         os: [ubuntu-latest, windows-latest]
-#     runs-on: ${{ matrix.os }}
-#     steps:
-#       - uses: actions/checkout@v4
-      
-#       - uses: pnpm/action-setup@v2
-#         with:
-#           version: 8
-      
-#       - name: Use Node.js ${{ matrix.node-version }}
-#         uses: actions/setup-node@v3
-#         with:
-#           node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
 
-#       - run: |
-#             cd client
-#             npm install
-#             npm run build
-#         env: 
-#             CI: ""
+      - run: |
+          cd client
+          npm install
+          npm run build
+        env:
+          CI: ""
 
-            
   deploy_frontend:
     name: Push frontend to dockerhub deploy to heroku
     runs-on: ubuntu-latest
-    # needs: [build_frontend]
+    needs: [ build_frontend ]
     steps:
       - uses: actions/checkout@v4
 
@@ -114,7 +111,7 @@ jobs:
         run: |
           cd client
           docker build -t nuitinfo_frontend .
-        
+
       - name: Push docker image to Dockerhub
         run: |
           docker tag nuitinfo_frontend ${{ env.DOCKERHUB_USERNAME }}/nuitinfo_frontend
