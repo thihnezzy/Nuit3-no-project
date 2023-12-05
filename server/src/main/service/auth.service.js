@@ -4,6 +4,7 @@ const UserError = require("../errors/UserError")
 const RessourceNotFoundError = require("../errors/RessourceNotFoundError")
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
+const BadCredentialsError = require("../errors/BadCredentialsError");
 
 const { JWT_SECRET } = process.env
 
@@ -42,7 +43,7 @@ let signIn = async (data) => {
     let passwordIsValid = bcrypt.compareSync(data.password, existingUser.password)
 
     if (!passwordIsValid) {
-        throw new UserError.UserDataError("signIn: Wrong username or password")
+        throw new BadCredentialsError("signIn: Wrong username or password")
     }
 
     const role = await userDao.findUserRole(existingUser)
